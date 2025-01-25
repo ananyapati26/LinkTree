@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className="mb-">
+    <div>
       hi
     </div>
   )

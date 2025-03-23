@@ -36,44 +36,42 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-
-        console.log("Incoming credentials:", credentials);
-
+        console.log("Incoming credentials:", credentials);  // Log input
+      
         if (!credentials?.email || !credentials?.password) {
-          // return null;
           throw new Error("Email and Password are required");
-
         }
-
+      
         const existingUser = await db.user.findUnique({
           where: { email: credentials.email },
         });
-
-        console.log(existingUser);    
+      
+        console.log("Found user:", existingUser);  // Log found user
+        
         if (!existingUser) {
-          // return null;
           throw new Error("No user found with this email");
         }
-        let passwordMatch = false;
-
-        // Compare passwords if the user's password exists
-        if (existingUser.password) {
-          passwordMatch = await bcrypt.compare(
-            credentials.password,
-            existingUser.password
-          );
+      
+        if (!existingUser.password) {
+          throw new Error("User has no password set");
         }
       
-        // Check if the password matches
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          existingUser.password
+        );
+      
         if (!passwordMatch) {
           throw new Error("Invalid password");
         }
+      
         return {
           id: `${existingUser.id}`,
           name: existingUser.username,
-          email: existingUser.email, 
+          email: existingUser.email,
         };
-      },
+      }
+      
     }),
   ],
 };

@@ -4,61 +4,53 @@ import {
   faInstagram,
   faTwitter,
   faYoutube,
+  faLinkedin,
+  faFacebook,
+  faTiktok,
+  faPinterest,
+  faSnapchat,
+  faSpotify,
+  faDiscord,
+  faTwitch,
+  faXTwitter,
+  faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons"; // Import faPlus from free-solid-svg-icons
 
-// Add icons to the FontAwesome library
-library.add(faInstagram, faTwitter, faYoutube);
-
-// Mapping of icon names to actual icons
-export const faIcons = {
+// Add icons to FontAwesome library
+library.add(
   faInstagram,
   faTwitter,
   faYoutube,
-};
+  faLinkedin,
+  faFacebook,
+  faTiktok,
+  faPinterest,
+  faSnapchat,
+  faSpotify,
+  faDiscord,
+  faTwitch,
+  faXTwitter,
+  faWhatsapp,
+  faPlus // Add faPlus to the library
+);
 
-// Initial links (store icon names as strings)
-const initialLinks = [
-  {
-    id: "1",
-    title: "Instagram",
-    description: "Follow me for daily updates",
-    icon: "faInstagram", // Store icon name instead of object
-    isActive: true,
-  },
-  {
-    id: "2",
-    title: "Portfolio Website",
-    description: "Check out my latest work",
-    icon: "faYoutube",
-    isActive: true,
-  },
-  {
-    id: "3",
-    title: "Twitter",
-    description: "Thoughts and industry news",
-    icon: "faTwitter",
-    isActive: false,
-  },
-];
-
+// Zustand store for managing links
 const useLinksStore = create((set) => ({
-  links: initialLinks,
-
-  addLink: (link) => set((state) => ({ links: [...state.links, link] })),
-
+  links: [],
+  addLink: (newLink) =>
+    set((state) => ({
+      links: [...state.links, { ...newLink, icon: newLink.icon || faPlus }], // Ensure default icon is set
+    })),
   updateLink: (updatedLink) =>
     set((state) => ({
-      links: state.links.map((link) => (link.id === updatedLink.id ? updatedLink : link)),
-    })),
-
-  removeLink: (id) =>
-    set((state) => ({ links: state.links.filter((link) => link.id !== id) })),
-
-  toggleLink: (id) =>
-    set((state) => ({
       links: state.links.map((link) =>
-        link.id === id ? { ...link, isActive: !link.isActive } : link
+        link.id === updatedLink.id ? { ...link, icon: updatedLink.icon || faPlus } : link
       ),
+    })),
+  deleteLink: (id) =>
+    set((state) => ({
+      links: state.links.filter((link) => link.id !== id),
     })),
 }));
 

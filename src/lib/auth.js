@@ -26,7 +26,7 @@ export const authOptions = {
     }),
     CredentialsProvider({
       name: "Credentials",
-  
+
       credentials: {
         email: {
           label: "Email",
@@ -36,42 +36,46 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Incoming credentials:", credentials);  // Log input
-      
+        console.log("Incoming credentials:", credentials); // Log input
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and Password are required");
         }
-      
+
         const existingUser = await db.user.findUnique({
           where: { email: credentials.email },
         });
-      
-        console.log("Found user:", existingUser);  // Log found user
-        
+
+        console.log("Found user:", existingUser); // Log found user
+
         if (!existingUser) {
           throw new Error("No user found with this email");
         }
-      
+
         if (!existingUser.password) {
           throw new Error("User has no password set");
         }
-      
+
         const passwordMatch = await bcrypt.compare(
           credentials.password,
           existingUser.password
         );
-      
+
         if (!passwordMatch) {
           throw new Error("Invalid password");
         }
-      
-        return {
+
+        const userData = {
           id: `${existingUser.id}`,
-          name: existingUser.username,
+          name: existingUser.username || "No Name",
           email: existingUser.email,
+          image: existingUser.image || "/default-profile.jpg",
         };
-      }
-      
+
+        console.log("Returning user data:", userData); // Debugging
+
+        return userData;
+      },
     }),
   ],
 };

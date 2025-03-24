@@ -1,6 +1,8 @@
 import { db } from "./../../../lib/db";
 import { NextResponse } from "next/server";
-import { hash } from "bcryptjs";
+// import { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
+
 import * as z from "zod";
 
 const userSchema = z.object({
@@ -12,7 +14,7 @@ const userSchema = z.object({
     .min(8, "Password must have at least 8 characters"),
 });
 
-export async function POST(req, res) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const { email, username, password } = userSchema.parse(body);
@@ -47,7 +49,7 @@ export async function POST(req, res) {
       );
     }
 
-    const hashedPassword = await hash(plainPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await db.user.create({
       data: {
         email,
@@ -56,7 +58,8 @@ export async function POST(req, res) {
       },
     });
 
-    const { password: userPassword, ...userWithoutPassword } = user;
+  // Remove password before sending response
+    const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json(
       {

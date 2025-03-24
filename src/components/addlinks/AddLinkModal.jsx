@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -28,9 +26,11 @@ import {
   faXTwitter,
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
-import { faPlus, faX } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-/** List of available social icons */
+import useLinksStore from "@/store/useLinksStore";
+
+/** Social Icons List */
 const socialIcons = [
   { name: "Instagram", icon: faInstagram },
   { name: "Twitter", icon: faTwitter },
@@ -48,15 +48,38 @@ const socialIcons = [
   { name: "Custom", icon: faPlus },
 ];
 
-const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
+const AddLinkModal = ({ isOpen, setIsOpen, existingLink }) => {
+  const addLink = useLinksStore((state) => state.addLink);
+
   /** Initialize state */
-  const [title, setTitle] = useState(existingLink?.title || "");
-  const [url, setUrl] = useState(existingLink?.url || "");
-  const [description, setDescription] = useState(existingLink?.description || "");
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(
-    existingLink?.icon || socialIcons[0].icon
+    existingLink?.icon || faInstagram // Set a valid default icon
   );
-  const [isActive, setIsActive] = useState(existingLink?.isActive ?? true);
+  
+
+  const [isActive, setIsActive] = useState(true);
+
+  /** Populate fields if editing */
+  useEffect(() => {
+    if (existingLink) {
+      setTitle(existingLink.title);
+      setUrl(existingLink.url);
+      setSelectedIcon(existingLink.icon);
+      setIsActive(existingLink.isActive);
+    } else {
+      resetForm();
+    }
+  }, [existingLink]);
+
+  /** Reset form */
+  const resetForm = () => {
+    setTitle("");
+    setUrl("");
+    setSelectedIcon(socialIcons[0].icon);
+    setIsActive(true);
+  };
 
   /** Handle form submission */
   const handleSubmit = () => {
@@ -66,26 +89,21 @@ const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
     }
 
     const newLink = {
-      id: existingLink?.id || Date.now().toString(), // Use existing ID if editing, otherwise generate new
+      id: existingLink?.id || Date.now().toString(),
       title,
       url,
-      description,
-      icon: selectedIcon,
+      icon: selectedIcon || faPlus,
       isActive,
     };
+    console.log("Current links in Zustand:", useLinksStore.getState().links);
 
-    onAddLink(newLink);
-    resetForm();
+
+    console.log("Adding link:", newLink);
+
+
+
+    addLink(newLink);
     setIsOpen(false);
-  };
-
-  /** Reset form fields */
-  const resetForm = () => {
-    setTitle("");
-    setUrl("");
-    setDescription("");
-    setSelectedIcon(socialIcons[0].icon);
-    setIsActive(true);
   };
 
   return (
@@ -95,7 +113,6 @@ const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
           <DialogTitle className="text-lg font-semibold">
             {existingLink ? "Edit Link" : "Add New Link"}
           </DialogTitle>
-        
         </DialogHeader>
 
         {/* Title Input */}
@@ -118,17 +135,7 @@ const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
           />
         </div>
 
-        {/* Description Input */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Description (optional)</label>
-          <Textarea
-            placeholder="A short description of this link"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        {/* Icons Section */}
+        {/* Icons Selection */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Icon</label>
           <div className="grid grid-cols-5 gap-2">
@@ -138,10 +145,13 @@ const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
                 type="button"
                 className={`w-10 h-10 flex items-center justify-center rounded-md border ${
                   selectedIcon === item.icon
-                    ? "border-black bg-gray-100"
+                    ? "border-blue-600 bg-gray-100"
                     : "border-gray-300"
                 }`}
-                onClick={() => setSelectedIcon(item.icon)}
+                onClick={() => {
+                  console.log("Selected Icon:", item.icon);
+                  setSelectedIcon(item.icon);
+                }}
               >
                 <FontAwesomeIcon icon={item.icon} size="lg" />
               </button>
@@ -151,10 +161,7 @@ const AddLinkModal = ({ isOpen, setIsOpen, onAddLink, existingLink }) => {
 
         {/* Active Checkbox */}
         <div className="flex items-center space-x-2">
-          <Checkbox
-            checked={isActive}
-            onCheckedChange={(checked) => setIsActive(checked)}
-          />
+          <Checkbox checked={isActive} onCheckedChange={setIsActive} />
           <label className="text-sm">Display this link on your page</label>
         </div>
 

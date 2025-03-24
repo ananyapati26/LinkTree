@@ -5,11 +5,11 @@ import useProfileStore from "@/store/useProfileStore"; // Import Zustand store
 import ProfilePreview from "./ProfilePreview";
 
 export default function ProfileTab() {
-  const { name, bio, profileImage, updateProfile, removeProfileImage } = useProfileStore();
+  const { name, bio, profileImage, updateProfile } = useProfileStore();
   const [tempName, setTempName] = useState(name);
   const [tempBio, setTempBio] = useState(bio);
   const [tempProfileImage, setTempProfileImage] = useState(profileImage);
-  const [isImageSelected, setIsImageSelected] = useState(profileImage !== "/profile.jpg");
+  const [isImageSelected, setIsImageSelected] = useState(profileImage !== "/default-profile.jpg");
 
   // Handle image upload
   // Handle image upload
@@ -29,11 +29,11 @@ const handleImageChange = (e) => {
   
   // Handle image removal
   const handleRemoveImage = () => {
-    setTempProfileImage("/profile.jpg"); // Reset to default image
+    setTempProfileImage("/default-profile.jpg"); // Reset to default image
     setIsImageSelected(false);
     
     // ✅ Update Zustand immediately
-    updateProfile({ name: tempName, bio: tempBio, profileImage: "/profile.jpg" });
+    updateProfile({ name: tempName, bio: tempBio, profileImage: "/default-profile.jpg" });
   };
   
 
@@ -71,7 +71,7 @@ const handleImageChange = (e) => {
           <img
             src={tempProfileImage}
             alt="Profile"
-            className="w-20 h-20 rounded-full border border-gray-300 shadow-sm"
+            className="w-20 h-20 rounded-full border border-blue-700 shadow-sm"
           />
 
           {/* Upload Button (Hidden if an image is selected) */}

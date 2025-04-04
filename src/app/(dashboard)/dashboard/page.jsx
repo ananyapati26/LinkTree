@@ -1,3 +1,6 @@
+"use client";
+import React from "react";
+
 import DashboardTabs from "@/components/dashboard/tabs";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";

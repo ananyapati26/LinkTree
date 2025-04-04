@@ -85,9 +85,10 @@ export default function ProfileTab() {
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50">
-      <div className="flex gap-8">
+
+      <div className="flex flex-col sm:flex-row gap-8">
         {/* Left - Profile Form */}
-        <div className="w-2/3 p-6 bg-white shadow-md rounded-lg">
+        <div className="sm:w-2/3 p-6 bg-white shadow-md rounded-lg">
           <h2 className="text-xl font-semibold">Profile Information</h2>
           <p className="text-gray-500 text-sm">Update your profile details</p>
 
@@ -150,6 +151,10 @@ export default function ProfileTab() {
         {/* Right - Profile Preview (Now using Zustand store) */}
         <ProfilePreview />
       </div>
+
+
+
+
       <div className="p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Appearance</h2>
 

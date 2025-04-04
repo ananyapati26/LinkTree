@@ -40,20 +40,26 @@ export async function POST(req) {
     if (!session) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
-
+  
     const user = await getUserFromSession(session);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    const profile = await db.profile.findUnique({
+  
+    let profile = await db.profile.findUnique({
       where: { userId: user.id },
     });
-
+  
+    // If profile doesn't exist, create with default color
     if (!profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+      profile = await db.profile.create({
+        data: {
+          userId: user.id,
+          color: "gray", // Default theme color
+        },
+      });
     }
-
+  
     return NextResponse.json({ color: profile.color });
-
   }
+  

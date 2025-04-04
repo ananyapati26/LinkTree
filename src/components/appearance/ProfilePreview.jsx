@@ -121,7 +121,7 @@ const ProfilePreview = () => {
   const selectedTheme = gradients[themeColor] || gradients.blue;
 
   return (
-    <div className="p-4 rounded-lg bg-white shadow-md w-96 mx-auto">
+    <div className="p-4 rounded-lg bg-white shadow-md mx-auto w-[100%] sm:w-[50%] md:w-[40%] lg:w-[30%] xl:w-[25%]">
       <h3 className="text-lg font-semibold mb-2">Preview</h3>
       <p className="text-gray-500 text-sm mb-4">See how your profile looks.</p>
 

@@ -4,6 +4,7 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -29,6 +30,12 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+
+   // ✅ Add this relation
+  links         Link[]  // User ke multiple links ho sakte hain
+
+  // profile  Profile[]
+    profile  Profile?
  
  
 }
@@ -90,3 +97,32 @@ model Authenticator {
  
   @@unique([userId, credentialID])
 }
+
+model Link {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  title     String
+  url       String
+  icon      String?  // Optional, frontend ke saath sync hai
+  order     Int      @default(0)  // Drag & Drop ke liye ordering
+  isActive  Boolean  @default(true)  // Toggle ke liye, default true
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Profile {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @unique @db.ObjectId
+  name      String?
+  bio       String?
+  avatar String?
+  backgroundColor String?  // Customize background color
+  fontStyle String?        // Font customization
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  }

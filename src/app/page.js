@@ -1,9 +1,12 @@
-import Image from "next/image";
+import React from 'react'
+import  Home  from "../app/landing-page/page"
 
-export default function Home() {
+const page = () => {
   return (
-    <>
-    <h1 className="text-4xl">home</h1>
-    </>
-  );
+    <div>
+      <Home />
+    </div>
+  )
 }
+
+export default page

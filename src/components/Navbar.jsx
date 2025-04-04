@@ -12,7 +12,7 @@ const Navbar = () => {
   return (
     <div className="bg-zinc-100 py-2 border-b border-s-zinc-200 fixed w-full z-10 top-0">
       <div className="container flex items-center justify-between">
-        <Link href="/">
+        <Link href={session ? "/admin" : "/"}>
           <HandMetal />
         </Link>
 
@@ -22,12 +22,24 @@ const Navbar = () => {
         <Link className={buttonVariants()} href="/sign-in">
           Sign in
         </Link> 
-        */} 
+        */}
 
         {session ? (
           // Show profile or logout button if user is signed in only
+
+          //Using async/await ensures that signOut() completes before redirecting the user to /.
+
+          // Why async/await?
+          // Ensures sign-out completes first:
+          // signOut() is an asynchronous function. If you don’t await it, the redirection (window.location.href = "/") might happen before the sign-out process is fully completed.
+          // This could cause issues like the session still appearing active after redirecting.
+          // Prevents race conditions:
+          // Without await, window.location.href = "/" might execute before the authentication state updates, leading to unexpected behavior.
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              await signOut();
+              window.location.href = "/";
+            }}
             className={buttonVariants({ variant: "outline" })}
           >
             Logout
@@ -44,8 +56,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
 
 // useSession() is a React Hook provided by NextAuth.js.
 // It retrieves session data (like user details, authentication status) using React Context.

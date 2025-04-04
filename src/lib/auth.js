@@ -3,41 +3,36 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";
 import GoogleProvider from "next-auth/providers/google";
-import bcrypt from "bcryptjs"; // or "bcrypt" depending on the library you're using
-
-/**
- * @type {import("next-auth").NextAuthOptions}
- */
+import bcrypt from "bcryptjs";
 
 export const authOptions = {
   adapter: PrismaAdapter(db),
   session: {
     strategy: "jwt",
   },
-  //to use our custom pages
   pages: {
     signIn: "/sign-in",
+    
   },
-
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
-
       credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "john@mail.com",
-        },
+        email: { label: "Email", type: "email", placeholder: "john@mail.com" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Incoming credentials:", credentials); // Log input
-
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and Password are required");
         }
@@ -45,8 +40,6 @@ export const authOptions = {
         const existingUser = await db.user.findUnique({
           where: { email: credentials.email },
         });
-
-        console.log("Found user:", existingUser); // Log found user
 
         if (!existingUser) {
           throw new Error("No user found with this email");
@@ -65,32 +58,37 @@ export const authOptions = {
           throw new Error("Invalid password");
         }
 
-        const userData = {
+        return {
           id: `${existingUser.id}`,
           name: existingUser.username || "No Name",
           email: existingUser.email,
           image: existingUser.image || "/default-profile.jpg",
         };
-
-        console.log("Returning user data:", userData); // Debugging
-
-        return userData;
       },
     }),
   ],
-  // callbacks: {
-  //   async session({ session, token }) {
-  //     session.user.id = token.sub; // ✅ Ensure user.id is set
-  //     console.log("Session data:", session); // Debugging
-  //     return session;
-  //   },
-  //   async jwt({ token, user }) {
-  //     if (user) {
-  //       token.sub = user.id; // ✅ Save user ID
-  //     }
-  //     console.log("JWT token:", token); // Debugging
-  //     return token;
-  //   },
-  // },
-  
+
+  events: {
+    async error(message) {
+      console.error("🔴 NextAuth Error: ", message);
+    },
+  },
+
+  callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log("👤 SignIn Callback");
+      console.log("User:", user);
+      console.log("Account:", account);
+      console.log("Profile:", profile);
+      return true;
+    },
+    async session({ session, token }) {
+      console.log("📦 Session Callback", session);
+      return session;
+    },
+    async jwt({ token, user }) {
+      console.log("🔐 JWT Callback", token);
+      return token;
+    },
+  },
 };

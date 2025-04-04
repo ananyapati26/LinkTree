@@ -85,75 +85,89 @@ export default function ProfileTab() {
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50">
-
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Left - Profile Form */}
-        <div className="sm:w-2/3 p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold">Profile Information</h2>
-          <p className="text-gray-500 text-sm">Update your profile details</p>
+        <div className="sm:w-2/3 mx-auto p-8 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]">
+          {/* Heading */}
+          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+            Edit Profile
+          </h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Update your personal information
+          </p>
 
           {/* Profile Picture Upload */}
-          <div className="mt-4 flex flex-col items-center relative">
-            {/* Remove Button (only if image is selected) */}
+          <div className="flex flex-col items-center relative">
             {isImageSelected && (
               <button
                 onClick={handleRemoveImage}
-                className="absolute -top-3 -right-1 bg-red-400 text-white px-2 py-1 text-xs rounded-full"
+                className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-1 text-xs rounded-full shadow hover:bg-red-600 transition"
               >
-                Remove Photo
+                ✕
               </button>
             )}
 
-            {/* Profile Image */}
             <img
               src={tempProfileImage}
               alt="Profile"
-              className="w-20 h-20 rounded-full border border-blue-700 shadow-sm"
+              className="w-24 h-24 rounded-full border-4 border-blue-600 shadow-md object-cover"
             />
 
-            {/* Upload Button (Hidden if an image is selected) */}
             {!isImageSelected && (
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="mt-3 text-sm text-gray-600"
-              />
+              <label className="mt-4 cursor-pointer inline-block bg-blue-100 text-blue-700 text-sm px-4 py-1.5 rounded-lg hover:bg-blue-200 transition">
+                Upload Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
             )}
           </div>
 
           {/* Name Input */}
-          <label className="block mt-4 font-medium">Display Name</label>
-          <input
-            type="text"
-            value={tempName}
-            onChange={(e) => setTempName(e.target.value)}
-            className="w-full border rounded-md p-2 mt-1"
-          />
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700">
+              Display Name
+            </label>
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              placeholder="Enter your name"
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
           {/* Bio Input */}
-          <label className="block mt-4 font-medium">Bio</label>
-          <textarea
-            value={tempBio}
-            onChange={(e) => setTempBio(e.target.value)}
-            className="w-full border rounded-md p-2 mt-1"
-          />
+          <div className="mt-5">
+            <label className="block text-sm font-medium text-gray-700">
+              Bio
+            </label>
+            <textarea
+              value={tempBio}
+              onChange={(e) => setTempBio(e.target.value)}
+              placeholder="Tell us something about you..."
+              rows={3}
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
           {/* Save Button */}
-          <button
-            onClick={handleSaveChanges}
-            className="mt-4 bg-black text-white px-4 py-2 rounded-md"
-          >
-            Save Changes
-          </button>
+          <div className="mt-6 text-right">
+            <button
+              onClick={handleSaveChanges}
+              className="bg-black text-white font-medium px-6 py-2 rounded-lg hover:bg-gray-900 transition"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
 
         {/* Right - Profile Preview (Now using Zustand store) */}
         <ProfilePreview />
       </div>
-
-
-
 
       <div className="p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Appearance</h2>

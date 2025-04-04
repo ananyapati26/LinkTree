@@ -78,19 +78,19 @@ export const authOptions = {
       },
     }),
   ],
-  callbacks: {
-    async session({ session, token }) {
-      session.user.id = token.sub; // ✅ Ensure user.id is set
-      console.log("Session data:", session); // Debugging
-      return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id; // ✅ Save user ID
-      }
-      console.log("JWT token:", token); // Debugging
-      return token;
-    },
-  },
+  // callbacks: {
+  //   async session({ session, token }) {
+  //     session.user.id = token.sub; // ✅ Ensure user.id is set
+  //     console.log("Session data:", session); // Debugging
+  //     return session;
+  //   },
+  //   async jwt({ token, user }) {
+  //     if (user) {
+  //       token.sub = user.id; // ✅ Save user ID
+  //     }
+  //     console.log("JWT token:", token); // Debugging
+  //     return token;
+  //   },
+  // },
   
 };

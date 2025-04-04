@@ -1,8 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import useProfileStore from "@/store/useProfileStore"; // Import Zustand store
-// import useLinksStore from "@/store/useLinksStore";
-// import useThemeStore from "@/store/useThemeStore"; // Import Zustand store
 import Image from "next/image";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

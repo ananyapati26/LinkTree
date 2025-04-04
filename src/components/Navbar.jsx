@@ -25,6 +25,7 @@ const Navbar = () => {
         */}
 
         {session ? (
+          
           // Show profile or logout button if user is signed in only
 
           //Using async/await ensures that signOut() completes before redirecting the user to /.

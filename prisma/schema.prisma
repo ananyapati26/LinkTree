@@ -118,7 +118,7 @@ model Profile {
   name      String?
   bio       String?
   avatar String?
-  backgroundColor String?  // Customize background color
+  color String?  // Customize background color
   fontStyle String?        // Font customization
   
   createdAt DateTime @default(now())

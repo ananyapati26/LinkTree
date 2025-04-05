@@ -75,7 +75,7 @@ const normalizeIconName = (iconName) => {
   return iconMapping[iconName?.toLowerCase()] || "faPlus";
 };
 
-const ProfilePreview = () => {
+const ProfilePreview = ({ darkMode }) => {
   const { name, bio, profileImage } = useProfileStore();
   const { links } = useLinksStore();
   const { themeColor, setThemeColor } = useThemeStore();
@@ -117,12 +117,13 @@ const ProfilePreview = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+        <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${darkMode ? 'border-white' : 'border-gray-900'}`}></div>
       </div>
     );
   }
 
-  const gradients = {
+  // Light mode gradients
+  const lightGradients = {
     gray: "bg-gray-100 text-gray-900 border-gray-400",
     yellow: "bg-yellow-100 text-yellow-900 border-yellow-400",
     blue: "bg-blue-100 text-blue-900 border-blue-400",
@@ -133,16 +134,30 @@ const ProfilePreview = () => {
     red: "bg-red-100 text-red-900 border-red-400",
   };
 
-  const selectedTheme = gradients[themeColor] || gradients.blue;
+  // Dark mode gradients
+const darkGradients = {
+  gray: "bg-gray-800 text-gray-100 border-gray-600",
+  yellow: "bg-yellow-800 text-yellow-200 border-yellow-600",
+  blue: "bg-blue-800 text-blue-200 border-blue-600",
+  green: "bg-green-800 text-green-200 border-green-600",
+  purple: "bg-purple-800 text-purple-200 border-purple-600",
+  pink: "bg-pink-800 text-pink-200 border-pink-600",
+  orange: "bg-orange-800 text-orange-200 border-orange-600",
+  red: "bg-red-800 text-red-200 border-red-600",
+};
+
+
+  const gradients = darkMode ? darkGradients : lightGradients;
+  const selectedTheme = gradients[themeColor] || (darkMode ? darkGradients.blue : lightGradients.blue);
 
   return (
-    <div className="p-4 rounded-lg bg-white shadow-md mx-auto w-[100%] sm:w-[50%] md:w-[40%] lg:w-[30%] xl:w-[25%]">
+    <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} shadow-md mx-auto w-[100%] sm:w-[50%] md:w-[40%] lg:w-[30%] xl:w-[25%]`}>
       <h3 className="text-lg font-semibold mb-2">Preview</h3>
-      <p className="text-gray-500 text-sm mb-4">See how your profile looks.</p>
+      <p className={`${darkMode ? 'text-gray-300' : 'text-gray-500'} text-sm mb-4`}>See how your profile looks.</p>
 
       {/* Mobile Frame */}
       <div
-        className={`p-8 rounded-[30px] shadow-lg text-center  border ${selectedTheme}`}
+        className={`p-8 rounded-[30px] shadow-lg text-center border ${selectedTheme}`}
       >
         {/* Profile Image */}
         <div className="w-28 h-28 mx-auto mb-4 border-2 rounded-full overflow-hidden shadow-md border-gray-400">
@@ -168,23 +183,23 @@ const ProfilePreview = () => {
               return (
                 <div
                   key={link.id}
-                  className="bg-white border border-gray-300 rounded-full px-6 py-3 text-sm shadow-sm flex items-center gap-3 transition-transform transform hover:scale-105 hover:bg-gray-100"
+                  className={`${darkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' : 'bg-white border-gray-300 hover:bg-gray-100'} border rounded-full px-6 py-3 text-sm shadow-sm flex items-center gap-3 transition-transform transform hover:scale-105`}
                 >
                   <FontAwesomeIcon
                     icon={iconObject}
                     size="lg"
-                    className="text-gray-700 w-5 h-5"
+                    className={`${darkMode ? 'text-gray-200' : 'text-gray-700'} w-5 h-5`}
                   />
                   <div>
-                    <p className="font-medium text-gray-900">{link.title}</p>
-                    <p className="text-xs text-gray-600">{link.description}</p>
+                    <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{link.title}</p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{link.description}</p>
                   </div>
                 </div>
               );
             })}
         </div>
 
-        <p className="text-xs mt-6">© 2025 LinkFolio</p>
+        <p className={`text-xs mt-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>© 2025 LinkFolio</p>
       </div>
     </div>
   );

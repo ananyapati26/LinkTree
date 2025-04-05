@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import useProfileStore from "@/store/useProfileStore"; // Import Zustand store
+import { useState, useEffect } from "react";
+import useProfileStore from "@/store/useProfileStore";
 import ProfilePreview from "./ProfilePreview";
 import axios from "axios";
-import useThemeStore from "@/store/useThemeStore"; // Import Zustand store
+import useThemeStore from "@/store/useThemeStore";
+
 
 export default function ProfileTab() {
   const { name, bio, profileImage, updateProfile } = useProfileStore();
@@ -17,6 +18,49 @@ export default function ProfileTab() {
   const [darkMode, setDarkMode] = useState(false);
   const [buttonStyle, setButtonStyle] = useState("filled");
   const { themeColor, setThemeColor } = useThemeStore();
+
+  // Load dark mode preference from localStorage on component mount
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem("darkMode") === "true";
+    setDarkMode(savedDarkMode);
+    
+    // Apply dark mode to document if enabled
+    if (savedDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  // Function to toggle dark mode
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem("darkMode", newDarkMode.toString());
+    
+    // Apply or remove dark class from document
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    // Save dark mode preference to API/database
+    saveDarkModePreference(newDarkMode);
+  };
+
+  // Save dark mode preference to API
+  const saveDarkModePreference = async (isDarkMode) => {
+    try {
+      await fetch("/api/darkmode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ darkMode: isDarkMode }),
+      });
+    } catch (error) {
+      console.error("Error saving dark mode preference:", error);
+    }
+  };
 
   const themeColors = [
     { name: "gray", color: "#6B7280" },
@@ -36,7 +80,7 @@ export default function ProfileTab() {
     await fetch("/api/themecolor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ color }), // <- dynamic value
+      body: JSON.stringify({ color }),
     });
   };
 
@@ -48,7 +92,6 @@ export default function ProfileTab() {
       setTempProfileImage(imageURL);
       setIsImageSelected(true);
 
-      // ✅ Update Zustand immediately so ProfilePreview updates instantly
       updateProfile({ name: tempName, bio: tempBio, profileImage: imageURL });
     } else {
       alert("Please upload an image file (JPG, PNG, etc.)");
@@ -60,7 +103,6 @@ export default function ProfileTab() {
     setTempProfileImage("/default-profile.jpg"); // Reset to default image
     setIsImageSelected(false);
 
-    // ✅ Update Zustand immediately
     updateProfile({
       name: tempName,
       bio: tempBio,
@@ -78,21 +120,21 @@ export default function ProfileTab() {
     const res = await axios.post("/api/profile", {
       name: tempName,
       bio: tempBio,
-      avatar: isImageSelected ? tempProfileImage : null, // Send null if default image is used
+      avatar: isImageSelected ? tempProfileImage : null,
     });
     console.log(res);
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-gray-50">
+    <div className={`flex flex-col gap-6 p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'} transition-colors duration-300`}>
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Left - Profile Form */}
-        <div className="sm:w-2/3 mx-auto p-8 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]">
+        <div className={`sm:w-2/3 mx-auto p-8 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]`}>
           {/* Heading */}
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'} mb-1`}>
             Edit Profile
           </h2>
-          <p className="text-gray-500 text-sm mb-6">
+          <p className={`${darkMode ? 'text-gray-300' : 'text-gray-500'} text-sm mb-6`}>
             Update your personal information
           </p>
 
@@ -114,7 +156,7 @@ export default function ProfileTab() {
             />
 
             {!isImageSelected && (
-              <label className="mt-4 cursor-pointer inline-block bg-blue-100 text-blue-700 text-sm px-4 py-1.5 rounded-lg hover:bg-blue-200 transition">
+              <label className={`mt-4 cursor-pointer inline-block ${darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-700'} text-sm px-4 py-1.5 rounded-lg ${darkMode ? 'hover:bg-blue-800' : 'hover:bg-blue-200'} transition`}>
                 Upload Photo
                 <input
                   type="file"
@@ -128,7 +170,7 @@ export default function ProfileTab() {
 
           {/* Name Input */}
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
               Display Name
             </label>
             <input
@@ -136,13 +178,13 @@ export default function ProfileTab() {
               value={tempName}
               onChange={(e) => setTempName(e.target.value)}
               placeholder="Enter your name"
-              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`mt-2 w-full px-4 py-2 border ${darkMode ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-600' : 'bg-white border-gray-300 text-black focus:ring-blue-500'} rounded-lg focus:outline-none focus:ring-2`}
             />
           </div>
 
           {/* Bio Input */}
           <div className="mt-5">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
               Bio
             </label>
             <textarea
@@ -150,7 +192,7 @@ export default function ProfileTab() {
               onChange={(e) => setTempBio(e.target.value)}
               placeholder="Tell us something about you..."
               rows={3}
-              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`mt-2 w-full px-4 py-2 border ${darkMode ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-600' : 'bg-white border-gray-300 text-black focus:ring-blue-500'} rounded-lg focus:outline-none focus:ring-2`}
             />
           </div>
 
@@ -158,7 +200,7 @@ export default function ProfileTab() {
           <div className="mt-6 text-right">
             <button
               onClick={handleSaveChanges}
-              className="bg-black text-white font-medium px-6 py-2 rounded-lg hover:bg-gray-900 transition"
+              className={`${darkMode ? 'bg-blue-700 hover:bg-blue-800' : 'bg-black hover:bg-gray-900'} text-white font-medium px-6 py-2 rounded-lg transition`}
             >
               Save Changes
             </button>
@@ -166,10 +208,10 @@ export default function ProfileTab() {
         </div>
 
         {/* Right - Profile Preview (Now using Zustand store) */}
-        <ProfilePreview />
+        <ProfilePreview darkMode={darkMode} />
       </div>
 
-      <div className="p-6 bg-white shadow-md rounded-lg">
+      <div className={`p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} shadow-md rounded-lg`}>
         <h2 className="text-xl font-semibold mb-4">Appearance</h2>
 
         {/* Theme Color Section */}
@@ -200,7 +242,7 @@ export default function ProfileTab() {
           <h3 className="text-sm font-medium mb-2 mt-4">Dark Mode</h3>
           <div className="flex items-center">
             <label className="inline-flex items-center cursor-pointer">
-              <span className="text-sm text-gray-500 mr-3">
+              <span className={`text-sm ${darkMode ? 'text-gray-200' : 'text-gray-500'} mr-3`}>
                 Enable dark mode for your profile page
               </span>
               <div className="relative">
@@ -208,11 +250,11 @@ export default function ProfileTab() {
                   type="checkbox"
                   className="sr-only"
                   checked={darkMode}
-                  onChange={() => setDarkMode(!darkMode)}
+                  onChange={toggleDarkMode}
                 />
                 <div
-                  className={`w-10 h-6 bg-gray-200 rounded-full transition ${
-                    darkMode ? "bg-blue-600" : ""
+                  className={`w-10 h-6 rounded-full transition ${
+                    darkMode ? "bg-blue-600" : "bg-gray-200"
                   }`}
                 ></div>
                 <div
@@ -231,10 +273,10 @@ export default function ProfileTab() {
           <div className="inline-flex rounded-lg shadow-sm">
             <button
               type="button"
-              className={`py-2 px-4 text-sm font-medium rounded-l-lg border border-gray-200 ${
+              className={`py-2 px-4 text-sm font-medium rounded-l-lg border ${
                 buttonStyle === "filled"
                   ? "bg-green-500 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
+                  : `${darkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border-gray-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200'}`
               }`}
               onClick={() => setButtonStyle("filled")}
             >
@@ -242,10 +284,10 @@ export default function ProfileTab() {
             </button>
             <button
               type="button"
-              className={`py-2 px-4 text-sm font-medium border-t border-b border-gray-200 ${
+              className={`py-2 px-4 text-sm font-medium border-t border-b ${
                 buttonStyle === "outline"
                   ? "bg-green-500 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
+                  : `${darkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border-gray-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200'}`
               }`}
               onClick={() => setButtonStyle("outline")}
             >
@@ -253,10 +295,10 @@ export default function ProfileTab() {
             </button>
             <button
               type="button"
-              className={`py-2 px-4 text-sm font-medium rounded-r-lg border border-gray-200 ${
+              className={`py-2 px-4 text-sm font-medium rounded-r-lg border ${
                 buttonStyle === "soft"
                   ? "bg-green-500 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
+                  : `${darkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border-gray-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200'}`
               }`}
               onClick={() => setButtonStyle("soft")}
             >

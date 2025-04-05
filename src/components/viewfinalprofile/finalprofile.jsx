@@ -19,6 +19,7 @@ import {
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import ShareableLink from "./ShareableLink"; // Import the ShareableLink component
 
 const iconMap = {
   faInstagram: faInstagram,
@@ -80,6 +81,7 @@ const ProfilePreviewfinal = () => {
   const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState("/default-profile.jpg");
   const [themeColor, setThemeColor] = useState("gray"); // Default color
+  const [userId, setUserId] = useState(null);
 
   const fetchUserData = async () => {
     try {
@@ -92,6 +94,7 @@ const ProfilePreviewfinal = () => {
       setName(data.name || "No Name Provided");
       setBio(data.bio || "No Bio Provided");
       setProfileImage(data.avatar || "/default-profile.jpg");
+      setUserId(data.userId || null);
     } catch (error) {
       console.error("Error fetching profile data:", error);
     }
@@ -199,6 +202,7 @@ const ProfilePreviewfinal = () => {
         </div>
         <p className="text-xs text-gray-400 mt-4">© 2025 LinkFolio</p>
       </div>
+      <ShareableLink userId={userId} />
     </div>
   );
 };

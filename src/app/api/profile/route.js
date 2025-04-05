@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -11,7 +10,6 @@ async function getUserFromSession(session) {
   });
 }
 
-// ✅ GET: Fetch the logged-in user's profile
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -34,12 +32,14 @@ export async function GET() {
         name: "Kittu",
         bio: "Digital Designer & Content Creator",
         avatar: "/default-profile.jpg",
+        userId: user.id, // Include user ID here
       });
     }
 
     return NextResponse.json({
       ...profile,
       avatar: profile.avatar || "/default-profile.jpg",
+      userId: user.id, // Include user ID here
     });
   } catch (error) {
     console.error("Profile fetch error:", error);
@@ -97,7 +97,10 @@ export async function POST(req) {
     return NextResponse.json(profile, { status: 201 });
   } catch (error) {
     console.error("Profile creation error:", error);
-    return NextResponse.json({ error: "Failed to create profile" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create profile" },
+      { status: 500 }
+    );
   }
 }
 
@@ -136,7 +139,10 @@ export async function PUT(req) {
     return NextResponse.json(updatedProfile);
   } catch (error) {
     console.error("Profile update error:", error);
-    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update profile" },
+      { status: 500 }
+    );
   }
 }
 
@@ -166,6 +172,9 @@ export async function DELETE(req) {
     return NextResponse.json({ message: "Profile deleted successfully" });
   } catch (error) {
     console.error("Profile deletion error:", error);
-    return NextResponse.json({ error: "Failed to delete profile" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete profile" },
+      { status: 500 }
+    );
   }
 }

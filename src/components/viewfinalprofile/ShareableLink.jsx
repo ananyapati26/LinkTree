@@ -9,8 +9,8 @@ const ShareableLink = ({ userId }) => {
 //   const [shareableLink, setShareableLink] = useState("hi");
 
 
-  // const shareableLink = `http://localhost:3000/linkbook/${userId}`;
-  const shareableLink = `https://link-folio-seven.vercel.app/linkbook/${userId}`;
+  const shareableLink = `http://localhost:3000/linkbook/${userId}`;
+  // const shareableLink = `https://link-folio-seven.vercel.app/linkbook/${userId}`;
 
   const copyToClipboard = async () => {
     try {

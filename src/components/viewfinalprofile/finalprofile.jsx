@@ -82,6 +82,7 @@ const ProfilePreviewfinal = () => {
   const [profileImage, setProfileImage] = useState("/default-profile.jpg");
   const [themeColor, setThemeColor] = useState("gray"); // Default color
   const [userId, setUserId] = useState(null);
+  
 
   const fetchUserData = async () => {
     try {
@@ -150,8 +151,13 @@ const ProfilePreviewfinal = () => {
     fetchLinks();
   }, []); // Empty dependency array means this runs once on mount
 
-  if (loading) return <div>Loading links...</div>;
-  if (error) return <div>Error loading links: {error}</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 rounded-lg bg-white shadow-md w-96 mx-auto mt-16">

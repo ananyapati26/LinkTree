@@ -79,6 +79,7 @@ const ProfilePreview = () => {
   const { name, bio, profileImage } = useProfileStore();
   const { links } = useLinksStore();
   const { themeColor, setThemeColor } = useThemeStore();
+  const [loading, setLoading] = useState(true); // Loading state
 
   const fetchProfileData = async () => {
     try {
@@ -88,6 +89,9 @@ const ProfilePreview = () => {
       useProfileStore.setState({ name, bio, profileImage: avatar });
     } catch (error) {
       console.error("Error fetching profile data:", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -100,12 +104,23 @@ const ProfilePreview = () => {
     } catch (error) {
       console.error("Error fetching theme color:", error);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchProfileData();
     getThemeColor(); // Fetch theme color on component mount
   }, []); // Fetch profile data on component mount
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   const gradients = {
     gray: "bg-gray-100 text-gray-900 border-gray-400",

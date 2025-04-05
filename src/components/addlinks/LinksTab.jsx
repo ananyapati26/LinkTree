@@ -81,6 +81,8 @@ const LinksTab = () => {
   const { links, setLinks, removeLink, toggleLink } = useLinksStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState(null);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -92,9 +94,20 @@ const LinksTab = () => {
       } catch (error) {
         console.error("Error fetching links:", error);
       }
+      finally {
+        setLoading(false);
+      }
     };
     fetchLinks();
   }, [setLinks]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md">

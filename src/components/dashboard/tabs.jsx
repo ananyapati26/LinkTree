@@ -22,7 +22,7 @@ const DashboardTabs = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="links" className="w-full">
-        <TabsList className="sticky top-0 z-10 flex gap-3 bg-gray-200 dark:bg-gray-800 p-2 rounded-xl shadow-md">
+        <TabsList className="top-0 z-10 flex gap-3 bg-gray-200 dark:bg-gray-800 p-2 rounded-xl shadow-md">
           <TabsTrigger value="links" className="hover:bg-gray-300 dark:hover:bg-gray-700 transition-all">
             Links
           </TabsTrigger>

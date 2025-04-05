@@ -9,17 +9,8 @@ import SettingsTab from "@/components/dashboard/SettingsTab";
 
 const DashboardTabs = () => {
   return (
-    <div className="p-6">
-      {/* Header */}
-      <motion.h1
-        className="text-3xl font-bold mb-6 text-gray-900 dark:text-white"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        LinkHub Dashboard
-      </motion.h1>
-
+    <div className="mt-14">
+    
       {/* Tabs */}
       <Tabs defaultValue="links" className="w-full">
         <TabsList className="top-0 z-10 flex gap-3 bg-gray-200 dark:bg-gray-800 p-2 rounded-xl shadow-md">

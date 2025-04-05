@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db"; // adjust this path based on your project
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 
 export async function POST(req) {
   try {
@@ -19,11 +19,7 @@ export async function POST(req) {
     }
 
     // Update cookie
-    cookies().set("darkMode", darkMode.toString(), {
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 365,
-      path: "/",
-    });
+    
 
     // Update Profile model in DB
     await db.profile.update({

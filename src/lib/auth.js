@@ -1,9 +1,9 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import NextAuth from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+
 
 export const authOptions = {
   adapter: PrismaAdapter(db),
@@ -18,14 +18,17 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          username: profile.email.split('@')[0] // fallback username
+        };
+      }
     }),
+    
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -60,7 +63,7 @@ export const authOptions = {
 
         return {
           id: `${existingUser.id}`,
-          name: existingUser.username || "No Name",
+          name: existingUser.username || null,
           email: existingUser.email,
           image: existingUser.image || "/default-profile.jpg",
         };
@@ -75,20 +78,21 @@ export const authOptions = {
   },
 
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      console.log("👤 SignIn Callback");
-      console.log("User:", user);
-      console.log("Account:", account);
-      console.log("Profile:", profile);
-      return true;
-    },
-    async session({ session, token }) {
-      console.log("📦 Session Callback", session);
-      return session;
-    },
     async jwt({ token, user }) {
-      console.log("🔐 JWT Callback", token);
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
+        token.username = user.username || null; // handle if username isn't present
+      }
       return token;
     },
-  },
+    async session({ session, token }) {
+      session.user.id = token.id;
+      session.user.username = token.username || null; // FIX THIS LINE
+      return session;
+    }
+  }
+  
 };

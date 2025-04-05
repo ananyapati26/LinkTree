@@ -173,7 +173,7 @@ export default function ProfileTab() {
         <h2 className="text-xl font-semibold mb-4">Appearance</h2>
 
         {/* Theme Color Section */}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {themeColors.map((theme) => (
             <button
               key={theme.name}

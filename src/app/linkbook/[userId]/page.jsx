@@ -1,28 +1,58 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faInstagram, faTwitter, faYoutube, faLinkedin, faFacebook,
-  faTiktok, faPinterest, faSnapchat, faSpotify, faDiscord,
-  faTwitch, faXTwitter, faWhatsapp
-} from '@fortawesome/free-brands-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+  faInstagram,
+  faTwitter,
+  faYoutube,
+  faLinkedin,
+  faFacebook,
+  faTiktok,
+  faPinterest,
+  faSnapchat,
+  faSpotify,
+  faDiscord,
+  faTwitch,
+  faXTwitter,
+  faWhatsapp,
+} from "@fortawesome/free-brands-svg-icons";
+import { faPlus, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
 const iconMap = {
-  faInstagram, faTwitter, faYoutube, faLinkedin, faFacebook,
-  faTiktok, faPinterest, faSnapchat, faSpotify, faDiscord,
-  faTwitch, faXTwitter, faWhatsapp, faPlus
+  faInstagram,
+  faTwitter,
+  faYoutube,
+  faLinkedin,
+  faFacebook,
+  faTiktok,
+  faPinterest,
+  faSnapchat,
+  faSpotify,
+  faDiscord,
+  faTwitch,
+  faXTwitter,
+  faWhatsapp,
+  faPlus,
 };
 
 const normalizeIconName = (iconName) => {
   const mapping = {
-    instagram: "faInstagram", twitter: "faTwitter", youtube: "faYoutube",
-    linkedin: "faLinkedin", facebook: "faFacebook", tiktok: "faTiktok",
-    pinterest: "faPinterest", snapchat: "faSnapchat", spotify: "faSpotify",
-    discord: "faDiscord", twitch: "faTwitch", xtwitter: "faXTwitter",
-    whatsapp: "faWhatsapp", custom: "faPlus"
+    instagram: "faInstagram",
+    twitter: "faTwitter",
+    youtube: "faYoutube",
+    linkedin: "faLinkedin",
+    facebook: "faFacebook",
+    tiktok: "faTiktok",
+    pinterest: "faPinterest",
+    snapchat: "faSnapchat",
+    spotify: "faSpotify",
+    discord: "faDiscord",
+    twitch: "faTwitch",
+    xtwitter: "faXTwitter",
+    whatsapp: "faWhatsapp",
+    custom: "faPlus",
   };
   return mapping[iconName?.toLowerCase()] || "faPlus";
 };
@@ -36,7 +66,7 @@ const gradients = {
   pink: "bg-pink-100 text-pink-900 border-pink-400",
   orange: "bg-orange-100 text-orange-900 border-orange-400",
   red: "bg-red-100 text-red-900 border-red-400",
-  black: "bg-gray-800 text-gray-100 border-gray-600",
+  black: "bg-gray-800 text-white border-gray-600",
 };
 
 export default function UserPage({ params }) {
@@ -44,7 +74,7 @@ export default function UserPage({ params }) {
   const [profile, setProfile] = useState(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [themeColor, setThemeColor] = useState('blue');
+  const [themeColor, setThemeColor] = useState("blue");
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -52,24 +82,28 @@ export default function UserPage({ params }) {
 
     async function fetchData() {
       try {
-        const profileRes = await fetch(`/api/profile/${userId}`);
-        const linksRes = await fetch(`/api/links/${userId}`);
-        const themeRes = await fetch(`/api/themecolor/${userId}`);
+        const [profileRes, linksRes, themeRes] = await Promise.all([
+          fetch(`/api/profile/${userId}`),
+          fetch(`/api/links/${userId}`),
+          fetch(`/api/themecolor/${userId}`),
+        ]);
 
         if (!profileRes.ok || !linksRes.ok) {
           setError(true);
           return;
         }
 
-        const profileData = await profileRes.json();
-        const linksData = await linksRes.json();
-        const themeData = await themeRes.json();
+        const [profileData, linksData, themeData] = await Promise.all([
+          profileRes.json(),
+          linksRes.json(),
+          themeRes.json(),
+        ]);
 
         setProfile(profileData);
         setLinks(linksData || []);
-        setThemeColor(themeData?.color || 'blue');
+        setThemeColor(themeData?.color || "blue");
       } catch (err) {
-        console.error('Failed to fetch data:', err);
+        console.error("Failed to fetch data:", err);
         setError(true);
       } finally {
         setLoading(false);
@@ -93,61 +127,68 @@ export default function UserPage({ params }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-bold">User Not Found</h1>
-        <p className="mt-4">We couldn't find the user profile you're looking for.</p>
+        <p className="mt-4">
+          We couldn't find the user profile you're looking for.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 rounded-lg bg-white shadow-md w-96 mx-auto mt-16">
-      <h3 className="text-lg font-semibold mb-2">Preview</h3>
-      <p className="text-gray-500 text-sm mb-4">See how this profile looks.</p>
-
-      {/* Mobile Frame */}
-      <div className={`p-8 rounded-[30px] shadow-lg text-center border ${selectedTheme}`}>
+    <div
+      className={`min-h-screen p-4 ${selectedTheme} mt-12 items-center flex flex-col`}
+    >
+      <div className="p-8 text-center">
         {/* Profile Image */}
         <div className="w-28 h-28 mx-auto mb-4 border-2 rounded-full overflow-hidden shadow-md border-gray-400">
           <Image
-            src={profile.avatar || '/default-profile.jpg'}
+            src={profile.avatar || "/default-profile.jpg"}
             width={112}
             height={112}
             className="rounded-full"
             alt="Profile"
           />
         </div>
-        <p className="text-2xl font-serif font-bold">{profile.name || "No Name"}</p>
+
+        <p className="text-2xl font-serif font-bold">
+          {profile.name || "No Name"}
+        </p>
         <p className="text-sm italic">{profile.bio || "No bio provided."}</p>
 
         {/* Links */}
-        <div className="mt-3 space-y-2">
-          {links.filter(link => link.isActive).map(link => {
-            const normalizedIconName = normalizeIconName(link.icon);
-            const iconObject = iconMap[normalizedIconName] || faPlus;
+        <div className="mt-4 space-y-2">
+          {links
+            .filter((link) => link.isActive)
+            .map((link) => {
+              const normalizedIconName = normalizeIconName(link.icon);
+              const iconObject = iconMap[normalizedIconName] || faPlus;
 
-            return (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white border rounded-lg p-2 text-sm shadow-sm flex items-center gap-2 hover:shadow-md transition"
-              >
-                <FontAwesomeIcon
-                  icon={iconObject}
-                  size="lg"
-                  className="text-gray-700 w-5 h-5"
-                />
-                <div>
-                  <p className="font-medium">{link.title}</p>
-                  <p className="text-xs text-gray-500">{link.description}</p>
-                </div>
-              </a>
-            );
-          })}
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-4 py-5 rounded-full border border-black bg-transparent hover:bg-white hover:text-black transition-all duration-200 group md:w-[550px] w-[300px] shadow-md"
+                >
+                  <div className="flex items-center gap-3">
+                    <FontAwesomeIcon
+                      icon={iconObject}
+                      className="text-black group-hover:text-black w-6 h-6"
+                    />
+                  </div>
+                  <span className="font-semibold text-black text-lg">
+                    {link.title}
+                  </span>
+
+                  <FontAwesomeIcon icon={faEllipsisV} className="text-black" />
+                </a>
+              );
+            })}
         </div>
-        <p className="text-xs text-gray-400 mt-4">© 2025 LinkFolio</p>
-      </div>
 
+        <p className="text-xs text-gray-400 mt-6">© 2025 LinkFolio</p>
+      </div>
     </div>
   );
 }

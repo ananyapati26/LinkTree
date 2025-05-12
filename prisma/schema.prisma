@@ -117,7 +117,7 @@ model Profile {
   userId  String  @unique @db.ObjectId
   name      String?
   bio       String?
-  avatar String?
+  avatar    String?
   color String?  // Customize background color
   fontStyle String?        // Font customization
   mode String?  // Light/Dark mode

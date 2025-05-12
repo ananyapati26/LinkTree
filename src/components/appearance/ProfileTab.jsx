@@ -5,6 +5,7 @@ import useProfileStore from "@/store/useProfileStore";
 import ProfilePreview from "./ProfilePreview";
 import axios from "axios";
 import useThemeStore from "@/store/useThemeStore";
+import { useSession } from "next-auth/react";
 
 
 export default function ProfileTab() {
@@ -18,6 +19,10 @@ export default function ProfileTab() {
   const [darkMode, setDarkMode] = useState(false);
   const [buttonStyle, setButtonStyle] = useState("filled");
   const { themeColor, setThemeColor } = useThemeStore();
+
+const { data: session } = useSession();
+const userId = session?.user?.id;  // Assuming userId is stored here
+
 
   // Load dark mode preference from localStorage on component mount
   useEffect(() => {
@@ -85,30 +90,43 @@ export default function ProfileTab() {
   };
 
   // Handle image upload
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      const imageURL = URL.createObjectURL(file);
-      setTempProfileImage(imageURL);
-      setIsImageSelected(true);
+ const handleImageChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-      updateProfile({ name: tempName, bio: tempBio, profileImage: imageURL });
-    } else {
-      alert("Please upload an image file (JPG, PNG, etc.)");
-    }
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64Image = reader.result; // base64 string with data:image/...;base64,
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: "your-user-id-here",
+        imageFile: base64Image,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Uploaded profile:", data);
   };
+
+  reader.readAsDataURL(file);
+};
 
   // Handle image removal
-  const handleRemoveImage = () => {
-    setTempProfileImage("/default-profile.jpg"); // Reset to default image
-    setIsImageSelected(false);
+const handleRemoveImage = () => {
+  setTempProfileImage("/default-profile.jpg"); // Reset to default image
+  setIsImageSelected(false);
 
-    updateProfile({
-      name: tempName,
-      bio: tempBio,
-      profileImage: "/default-profile.jpg",
-    });
-  };
+  updateProfile({
+    name: tempName,
+    bio: tempBio,
+    profileImage: "/default-profile.jpg",  // Default image URL
+  });
+};
 
   // Save changes to Zustand store
   const handleSaveChanges = async () => {
@@ -140,33 +158,35 @@ export default function ProfileTab() {
 
           {/* Profile Picture Upload */}
           <div className="flex flex-col items-center relative">
-            {isImageSelected && (
-              <button
-                onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-1 text-xs rounded-full shadow hover:bg-red-600 transition"
-              >
-                ✕
-              </button>
-            )}
+  {isImageSelected && (
+    <button
+      onClick={handleRemoveImage}
+      className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-1 text-xs rounded-full shadow hover:bg-red-600 transition"
+    >
+      ✕
+    </button>
+  )}
 
-            <img
-              src={tempProfileImage}
-              alt="Profile"
-              className="w-24 h-24 rounded-full border-4 border-blue-600 shadow-md object-cover"
-            />
+  <img
+    src={tempProfileImage}
+    alt="Profile"
+    className="w-24 h-24 rounded-full border-4 border-blue-600 shadow-md object-cover"
+  />
 
-            {!isImageSelected && (
-              <label className={`mt-4 cursor-pointer inline-block ${darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-700'} text-sm px-4 py-1.5 rounded-lg ${darkMode ? 'hover:bg-blue-800' : 'hover:bg-blue-200'} transition`}>
-                Upload Photo
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
+  {!isImageSelected && (
+    <label
+      className={`mt-4 cursor-pointer inline-block ${darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-700'} text-sm px-4 py-1.5 rounded-lg ${darkMode ? 'hover:bg-blue-800' : 'hover:bg-blue-200'} transition`}
+    >
+      Upload Photo
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+      />
+    </label>
+  )}
+</div>
 
           {/* Name Input */}
           <div className="mt-6">

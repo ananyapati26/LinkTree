@@ -252,6 +252,8 @@ const darkGradients = {
                  );
                })}
            </div>
+
+           <ShareableLink userId={userId} /> {/* Pass darkMode prop to ShareableLink */}
    
            <p className={`text-xs mt-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>© 2025 LinkFolio</p>
          </div>

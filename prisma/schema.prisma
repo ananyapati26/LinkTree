@@ -122,6 +122,7 @@ model Profile {
   fontStyle String?        // Font customization
   mode String?  // Light/Dark mode
   
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -43,75 +43,89 @@ const SignInform = () => {
       password: values.password,
       redirect: false,
     });
-    console.log("Sign-in response:", signInData);
+
     if (signInData?.error) {
       console.log(signInData.error);
     } else {
-      // router.push("/admin");
-      console.log("Navigating to /admin...");
       router.push("/admin");
-      console.log("Navigation initiated.");
     }
-    console.log(signInData);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <div className="space-y-4">
-          {" "}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="mail@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
+        <h2 className="text-3xl font-bold text-center text-black mb-6">
+          Welcome Back
+        </h2>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700">Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="mail@example.com"
+                      {...field}
+                      className="rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700">Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your password"
+                      {...field}
+                      className="rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500" />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full py-3 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              Sign In
+            </Button>
+          </form>
+        </Form>
+
+        <div className="flex items-center my-6">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="px-4 text-gray-500 text-sm">OR</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
         </div>
 
-        <Button className="w-full mt-6" type="submit">
-          Sign In
-        </Button>
-      </form>
+      <GoogleSignInButton className="text-white">Sign in with Google</GoogleSignInButton>
 
-      <div className="mx-auto mt-4 flex items-center justify-evenly w-full before:mr-4 after:ml-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:block after:h-px after:flex-grow after:bg-stone-400">
-        or
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Don't have an account?{" "}
+          <Link
+            href="/sign-up"
+            className="text-black font-medium hover:underline"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
-      <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
-      <p className="text-center text-sm text-gray-600 mt-2">
-        Don't have an account?
-        <Link href="/sign-up" className="text-blue-500 hover:underline">
-          Sign up
-        </Link>
-      </p>
-    </Form>
+    </div>
   );
 };
 
